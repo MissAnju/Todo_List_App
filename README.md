@@ -7,7 +7,7 @@ The To-Do List is a simple web app that lets users add, manage, and remove tasks
 
 ![preview img](/preview.png)
 
-
+##
 ✨ Features
 
 ➕ Add Tasks – Enter a task in the input field and add it to your list.
@@ -40,7 +40,7 @@ CSS – For styling and visual feedback.
 
 JavaScript – For functionality (adding, deleting, completing tasks, and persistence).
 
-###
+##
 🎯 Why Use This Project
 
 Helps improve organization and productivity.
