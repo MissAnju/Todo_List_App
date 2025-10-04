@@ -1,4 +1,5 @@
-
+// * CATEGORIES & TASKS DATA
+// Array of category objects — each representing a to-do category with a title and associated image
 let categories = [
   {
     title: "Personal",
@@ -34,6 +35,7 @@ let categories = [
   },
 ];
 
+// Array of predefined task objects with id, task name, category, and completion status
 let tasks = [
   {
     id: 1,
@@ -189,11 +191,13 @@ let tasks = [
   // Add more tasks for each category as desired
 ];
 
+// * LOCAL STORAGE FUNCTIONS
+// Save the 'tasks' array to local storage
 // Define functions
 const saveLocal = () => {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
-
+// Retrieve 'tasks' data from local storage and update the global 'tasks' array
 const getLocal = () => {
   const tasksLocal = JSON.parse(localStorage.getItem("tasks"));
   if (tasksLocal) {
@@ -201,27 +205,32 @@ const getLocal = () => {
   }
 };
 
+// * UI CONTROL FUNCTIONS
+// Toggles between category list view and category-specific task view
 const toggleScreen = () => {
   screenWrapper.classList.toggle("show-category");
 };
-
+// Updates task counts for the selected category and total number of tasks
 const updateTotals = () => {
   const categoryTasks = tasks.filter(
     (task) =>
       task.category.toLowerCase() === selectedCategory.title.toLowerCase()
   );
-  numTasks.innerHTML = `${categoryTasks.length} Tasks`;
-  totalTasks.innerHTML = tasks.length;
+  numTasks.innerHTML = `${categoryTasks.length} Tasks`; // Number of tasks in this category
+  totalTasks.innerHTML = tasks.length;  // Total number of all tasks
 };
-
+// Dynamically render the list of categories on the homepage
 const renderCategories = () => {
   categoriesContainer.innerHTML = "";
+
+   // Loop through each category and create UI cards
   categories.forEach((category) => {
     const categoryTasks = tasks.filter(
       (task) => task.category.toLowerCase() === category.title.toLowerCase()
     );
     const div = document.createElement("div");
     div.classList.add("category");
+    // When clicked, show the selected category’s tasks
     div.addEventListener("click", () => {
       screenWrapper.classList.toggle("show-category");
       selectedCategory = category;
@@ -230,7 +239,7 @@ const renderCategories = () => {
       categoryImg.src = `images/${category.img}`;
       renderTasks();
     });
-
+ // Category HTML structure
     div.innerHTML = `
                   <div class="left">
                 <img src="images/${category.img}"
@@ -264,31 +273,41 @@ const renderCategories = () => {
     categoriesContainer.appendChild(div);
   });
 };
-
+// Renders the list of tasks for the selected category
 const renderTasks = () => {
   tasksContainer.innerHTML = "";
   const categoryTasks = tasks.filter(
     (task) =>
       task.category.toLowerCase() === selectedCategory.title.toLowerCase()
   );
+    // If no tasks exist, show a message
   if (categoryTasks.length === 0) {
     tasksContainer.innerHTML = `<p class="no-tasks">No tasks added for this category</p>`;
   } else {
+    // Render each task
     categoryTasks.forEach((task) => {
       const div = document.createElement("div");
       div.classList.add("task-wrapper");
+      
+       // Create task checkbox label
       const label = document.createElement("label");
       label.classList.add("task");
       label.setAttribute("for", task.id);
+
+       // Checkbox for completion toggle
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.id = task.id;
       checkbox.checked = task.completed;
+
+      // When checkbox is clicked, toggle completion status
       checkbox.addEventListener("change", () => {
         const index = tasks.findIndex((t) => t.id === task.id);
         tasks[index].completed = !tasks[index].completed;
         saveLocal();
       });
+
+      // Delete button icon
       div.innerHTML = `
       <div class="delete">
                 <svg
@@ -307,6 +326,8 @@ const renderTasks = () => {
                 </svg>
               </div>
               `;
+
+      // Task label content with checkmark and text
       label.innerHTML = `
               <span class="checkmark"
                 ><svg
@@ -326,10 +347,15 @@ const renderTasks = () => {
               </span>
               <p>${task.task}</p>
         `;
+
+       // Insert checkbox into label
       label.prepend(checkbox);
+
+     // Insert label before delete button
       div.prepend(label);
       tasksContainer.appendChild(div);
-
+      
+     // Handle delete task functionality
       const deleteBtn = div.querySelector(".delete");
       deleteBtn.addEventListener("click", () => {
         const index = tasks.findIndex((t) => t.id === task.id);
@@ -339,41 +365,49 @@ const renderTasks = () => {
       });
     });
 
+    // Update the UI after rendering tasks
     renderCategories();
     updateTotals();
   }
 };
 
+// Toggle visibility of the add task form and background overlay
 const toggleAddTaskForm = () => {
   addTaskWrapper.classList.toggle("active");
   blackBackdrop.classList.toggle("active");
   addTaskBtn.classList.toggle("active");
 };
 
+// Add a new task to the selected category
 const addTask = (e) => {
-  e.preventDefault();
-  const task = taskInput.value;
-  const category = categorySelect.value;
+  e.preventDefault();  // Prevent default form submission
+  
+  const task = taskInput.value; // Task text from input field
+  const category = categorySelect.value;  // Selected category
+
 
   if (task === "") {
-    alert("Please enter a task");
+    alert("Please enter a task"); // Validation check
   } else {
     const newTask = {
-      id: tasks.length + 1,
+      id: tasks.length + 1,  // Auto-generate unique ID
       task,
       category,
       completed: false,
     };
-    taskInput.value = "";
-    tasks.push(newTask);
-    saveLocal();
-    toggleAddTaskForm();
-    renderTasks();
+    taskInput.value = ""; // Clear input
+    tasks.push(newTask);   // Add to array
+    saveLocal();         // Save in localStorage
+    toggleAddTaskForm();    // Hide form
+    renderTasks();   // Refresh task list
   }
 };
 
+// * INITIALIZATION & EVENT LISTENERS
 // Initialize variables and DOM elements
-let selectedCategory = categories[0];
+
+let selectedCategory = categories[0];  // Default selected category (first one)
+// DOM ELEMENTS
 const categoriesContainer = document.querySelector(".categories");
 const screenWrapper = document.querySelector(".wrapper");
 const menuBtn = document.querySelector(".menu-btn");
@@ -391,6 +425,7 @@ const addBtn = document.querySelector(".add-btn");
 const cancelBtn = document.querySelector(".cancel-btn");
 const totalTasks = document.getElementById("total-tasks");
 
+// EVENT LISTENERS FOR UI INTERACTIONS
 // Attach event listeners
 menuBtn.addEventListener("click", toggleScreen);
 backBtn.addEventListener("click", toggleScreen);
@@ -400,12 +435,15 @@ addBtn.addEventListener("click", addTask);
 cancelBtn.addEventListener("click", toggleAddTaskForm);
 
 // Render initial state
-getLocal();
-renderTasks();
+getLocal(); // Load saved tasks (if any)
+renderTasks();  // Display tasks for default category
+
+// Populate category dropdown list
 categories.forEach((category) => {
   const option = document.createElement("option");
   option.value = category.title.toLowerCase();
   option.textContent = category.title;
   categorySelect.appendChild(option);
 });
+
 
